@@ -6,7 +6,12 @@
 //  Copyright © 2020 UTS. All rights reserved.
 //
 
+
 import Foundation
+
+enum CalculatorError: Error {
+    case invalidInput
+}
 
 class Calculator {
     
@@ -27,12 +32,43 @@ class Calculator {
         return no1 + no2;
     }
     
-    func calculate(args: [String]) -> String {
-        // Todo: Calculate Result from the arguments. Replace dummyResult with your actual result;
-        let dummyResult = add(no1: 1, no2: 2);
-        
-        let result = String(dummyResult);
-        return(result)
+    /// Handles integer parsing and the simplest valid expression forms.
+    func calculate(args: [String]) throws -> String {
+        // First test: a single integer such as 42, +4, -4
+        if args.count == 1 {
+            let inputText = args[0]
+
+            guard let parsedInteger = Int(inputText) else {
+                throw CalculatorError.invalidInput
+            }
+
+            currentResult = parsedInteger
+            return String(currentResult)
+        }
+
+        // Second test: valid input should accept the form number operator number
+        if args.count == 3 {
+            let firstText = args[0]
+            let operatorText = args[1]
+            let secondText = args[2]
+
+            guard let firstNumber = Int(firstText) else {
+                throw CalculatorError.invalidInput
+            }
+
+            guard let secondNumber = Int(secondText) else {
+                throw CalculatorError.invalidInput
+            }
+
+            guard operatorText == "+" else {
+                throw CalculatorError.invalidInput
+            }
+
+            currentResult = add(no1: firstNumber, no2: secondNumber)
+            return String(currentResult)
+        }
+
+        throw CalculatorError.invalidInput
     }
     
 }
