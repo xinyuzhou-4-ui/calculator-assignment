@@ -15,7 +15,7 @@ args.removeFirst() // remove the name of the program
 let calculator = Calculator()
 
 // Calculate the result from the command-line arguments
- do {
+do {
     let result = try calculator.calculate(args: args)
     print(result)
 } catch {

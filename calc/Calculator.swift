@@ -6,14 +6,121 @@
 //  Copyright © 2020 UTS. All rights reserved.
 //
 
-
 import Foundation
 
 enum CalculatorError: Error {
     case invalidInput
 }
 
+class InputValidator {
+    func validateTokens(_ args: [String]) throws {
+        guard !args.isEmpty else {
+            throw CalculatorError.invalidInput
+        }
+       
+        guard args.count % 2 == 1 else {
+            throw CalculatorError.invalidInput
+        }
+
+        for i in 0..<args.count {
+            let token = args[i]
+
+            if i % 2 == 0 {
+                guard Int(token) != nil else {
+                    throw CalculatorError.invalidInput
+                }
+            } else {
+                guard token == "+" else {
+                    throw CalculatorError.invalidInput
+                }
+            }
+        }
+    }
+}
+
+class Addition {
+    func calculate(args: [String]) throws -> Int {
+        guard let firstNumber = Int(args[0]) else {
+            throw CalculatorError.invalidInput
+        }
+
+        var result = firstNumber
+
+        var index = 1
+        while index < args.count {
+            guard index + 1 < args.count else {
+                throw CalculatorError.invalidInput
+            }
+
+            guard let nextNumber = Int(args[index + 1]) else {
+                throw CalculatorError.invalidInput
+            }
+
+            result = result + nextNumber
+            index += 2
+        }
+
+        return result
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class Calculator {
+    let validator = InputValidator()
+    let addition = Addition()
+
+    func calculate(args: [String]) throws -> String {
+        try validator.validateTokens(args)
+        let result = try addition.calculate(args: args)
+        return String(result)
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*class Calculator {
     
     /// For multi-step calculation, it's helpful to persist existing result
     var currentResult = 0;
@@ -72,3 +179,4 @@ class Calculator {
     }
     
 }
+*/
