@@ -10,6 +10,7 @@ import Foundation
 
 enum CalculatorError: Error {
     case invalidInput
+    case divideByZero
 }
 
 class InputValidator {
@@ -30,7 +31,7 @@ class InputValidator {
                     throw CalculatorError.invalidInput
                 }
             } else {
-                guard token == "+" else {
+                guard token == "+" || token == "-" || token == "x" || token == "/" || token == "%" else {
                     throw CalculatorError.invalidInput
                 }
             }
@@ -39,15 +40,62 @@ class InputValidator {
 }
 
 class Addition {
-    func calculate(args: [String]) throws -> Int {
+    func add(no1: Int, no2: Int) -> Int {
+        return no1 + no2
+    }
+}
+
+class Subtraction {
+    func subtract(no1: Int, no2: Int) -> Int {
+        return no1 - no2
+    }
+}
+
+class Multiplication {
+    func multiply(no1: Int, no2: Int) -> Int {
+        return no1 * no2
+    }
+}
+
+class Division {
+    func divide(no1: Int, no2: Int) throws -> Int {
+        guard no2 != 0 else {
+            throw CalculatorError.divideByZero
+        }
+        return no1 / no2
+    }
+}
+
+class Modulus {
+    func mod(no1: Int, no2: Int) throws -> Int {
+        guard no2 != 0 else {
+            throw CalculatorError.divideByZero
+        }
+        return no1 % no2
+    }
+}
+
+class Calculator {
+    let validator = InputValidator()
+    let addition = Addition()
+    let subtraction = Subtraction()
+    let multiplication = Multiplication()
+    let division = Division()
+    let modulus = Modulus()
+    
+    func calculate(args: [String]) throws -> String {
+        try validator.validateTokens(args)
+
         guard let firstNumber = Int(args[0]) else {
             throw CalculatorError.invalidInput
         }
 
         var result = firstNumber
-
         var index = 1
+
         while index < args.count {
+            let operatorText = args[index]
+
             guard index + 1 < args.count else {
                 throw CalculatorError.invalidInput
             }
@@ -56,39 +104,23 @@ class Addition {
                 throw CalculatorError.invalidInput
             }
 
-            result = result + nextNumber
+            if operatorText == "+" {
+                result = addition.add(no1: result, no2: nextNumber)
+            } else if operatorText == "-" {
+                result = subtraction.subtract(no1: result, no2: nextNumber)
+            } else if operatorText == "x" {
+                result = multiplication.multiply(no1: result, no2: nextNumber)
+            } else if operatorText == "/" {
+                result = try division.divide(no1: result, no2: nextNumber)
+            } else if operatorText == "%" {
+                result = try modulus.mod(no1: result, no2: nextNumber)
+            } else {
+                throw CalculatorError.invalidInput
+            }
+
             index += 2
         }
 
-        return result
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class Calculator {
-    let validator = InputValidator()
-    let addition = Addition()
-
-    func calculate(args: [String]) throws -> String {
-        try validator.validateTokens(args)
-        let result = try addition.calculate(args: args)
         return String(result)
     }
 }
