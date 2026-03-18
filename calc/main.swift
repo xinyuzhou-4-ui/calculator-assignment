@@ -19,6 +19,6 @@ let calculator = Calculator()
     let result = try calculator.calculate(args: args)
     print(result)
 } catch {
-    fputs("Error\n", stderr)
+    print("Error")
     exit(1)
 }
